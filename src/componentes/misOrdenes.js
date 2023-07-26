@@ -17,6 +17,9 @@ import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import IconButton from "@mui/material/IconButton";
 import Header from "../Header";
 import { styled, useTheme } from "@mui/material/styles";
+import { useLocation } from "react-router-dom";
+
+
 const drawerWidth = 240;
 
 const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })(
@@ -126,6 +129,13 @@ const MisOrdenes = () => {
   const [lanzarAlertas, setLanzarAlertas] = useState({success: false, error: false});
   const [open, setOpen] = useState(false);
   const theme = useTheme();
+  const { state } = useLocation();
+  const [dataState, setDataState]=useState([])
+
+  const enviarState = ()=>{
+    setDataState(state)
+  }
+  
   const addToList = (list, index, element) => {
     const result = Array.from(list);
     result.splice(index, 0, element);
@@ -239,7 +249,7 @@ const handlerReiniciarEstadoAlertas = () => {
           </IconButton>
         </DrawerHeader>
         <Divider />
-        <Header />
+        <Header enviarState={dataState}/>
         <Divider />
       </Drawer>
       <Main open={open}>

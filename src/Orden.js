@@ -1,4 +1,5 @@
 import * as React from "react";
+import FetchData from "./share/fetchData";
 import { styled, useTheme } from "@mui/material/styles";
 import { useState } from "react";
 import Box from "@mui/material/Box";
@@ -78,11 +79,11 @@ const nombrePlantilla = [
     nombreForm: "MANTENIMIENTO",
     body: [
       {
-        terminó: ""
+        terminó: "",
       },
       {
-        dificultad: ""
-      }
+        dificultad: "",
+      },
     ],
   },
   {
@@ -91,11 +92,11 @@ const nombrePlantilla = [
     nombreForm: "REUNION",
     body: [
       {
-        terminó: ""
+        terminó: "",
       },
       {
-        dificultad: ""
-      }
+        dificultad: "",
+      },
     ],
   },
   {
@@ -104,11 +105,11 @@ const nombrePlantilla = [
     nombreForm: "CONSULTAS",
     body: [
       {
-        terminó: ""
+        terminó: "",
       },
       {
-        dificultad: ""
-      }
+        dificultad: "",
+      },
     ],
   },
   {
@@ -117,11 +118,11 @@ const nombrePlantilla = [
     nombreForm: "SERVICIOS",
     body: [
       {
-        terminó: ""
+        terminó: "",
       },
       {
-        dificultad: ""
-      }
+        dificultad: "",
+      },
     ],
   },
   {
@@ -130,11 +131,11 @@ const nombrePlantilla = [
     nombreForm: "MANTENIMIENTO",
     body: [
       {
-        terminó: ""
+        terminó: "",
       },
       {
-        dificultad: ""
-      }
+        dificultad: "",
+      },
     ],
   },
 ];
@@ -162,61 +163,82 @@ const Orden = () => {
   const theme = useTheme();
   const [open, setOpen] = useState(false);
   const [nombreOrden, setNombreOrden] = useState("");
-  const [nombreFormulario, setNombreFormulario] = useState(undefined);
-  const [usuario, setUsuarios] = useState(undefined);
+  const [nombreFormulario, setNombreFormulario] = useState("");
+  const [usuarios, setUsuarios] = useState("");
+  const [dataFormulario, setDataFormulario] = useState([]);
   const [registroOrden, setRegistroOrden] = useState([]);
   const [plantillaFiltrada, setPlantillaFiltrada] = useState([]);
+  const [usuariosData, setUsuariosData] = useState([]);
+  const [dataState, setDataState] = useState([]);
+  const[idUsuario, setIdUsuario]=useState([]);
   const { state } = useLocation();
 
-  /*  const crearOrden = async () => {
-    let params = idFormulario;
-    let params1 = idCreador;
-    let params2= idEjecutor;
-    let params3= nombreOrden
-      const myData = await FetchData.postDataPromise(
-        "http://xxx.x.x.x:xxxx",
-        "/crearOrden/orden?idFormulario=" +
-          params +
-          "&idCreador" +
-          params1+
-          "&idEjecutor"+
-          params2+
-          "&nombreOrden"+
-          params3
+  const enviarState = () => {
+    setDataState(state);
+  };
+
+  const crearOrden = async () => {
+    console.log(usuarios.uuid)
+    let params ={idFormulario:nombreFormulario.id, idCreador:idUsuario, idEjecutor:usuarios.uuid, rptaOrden: nombreFormulario.body, motivo: nombreOrden}
+    console.log(JSON.stringify(params))  
+    const myData = await FetchData.postDataPromise(
+        "http://192.237.253.176:2850",
+        "/orden/crearOrden",params,3000
       );
       const data = await myData.json();
-      console.log("creando...", data);
       setRegistroOrden(data);
+      console.log('dataCreada',registroOrden)
       alert("Se creó");
   }; 
 
-  React.useEffect(()=>{
-    const cargarFormularios = async () =>{
-      const myData1= await FetchData.postDataPromise(
-        "http://xxx.x.x.x:xxxx",
-        "/crearOrden/orden?idFormulario=" +
-          params +
-          "&idCreador" +
-          params1+
-          "&idEjecutor"+
-          params2+
-          "&nombreOrden"+
-          params3
-      );
-    }
-  })
- */
-  const handleDrawerOpen = () => {
-    setOpen(true);
-  };
-
-  const handleDrawerClose = () => {
-    setOpen(false);
-  };
-
   React.useEffect(() => {
+    console.log(state[0].resultado.idUsuario)
+    setIdUsuario(state[0].resultado.idUsuario)
+    let params = { idArea: state[0].resultado.idArea };
+    const getFormulario = async () => {
+      const myData = await FetchData.postDataPromise(
+        "http://192.237.253.176:2850",
+        "/formulario/obtenerFormulario",
+        params,
+        3000
+      );
+      const data = await myData.json();
+      const parse = JSON.parse(data.resultado.formularios);
+      console.log(parse);
+      setDataFormulario(parse);
+    };
+
+    const getUsuarios = async () => {
+      const myDataUsuario = await FetchData.getDataPromise(
+        "http://192.237.253.176:2850",
+        "/usuario/obtenerUsuario"
+      );
+      const dataUsuario = await myDataUsuario.json();
+      const parse1 = JSON.parse(dataUsuario.resultado.usuarios);
+      console.log("todos los Usuarios", parse1);
+      setUsuariosData(parse1);
+    };
+    getUsuarios();
+    getFormulario();
+  }, []);
+
+  /*   React.useEffect(() => {
+    const getUsuarios = async () => {
+      const myDataUsuario = await FetchData.getDataPromise(
+        "http://192.237.253.176:2850",
+        "/usuario/obtenerUsuario"
+      );
+      const dataUsuario = await myDataUsuario.json();
+      const parse1=JSON.parse(dataUsuario.resultado.usuarios)
+      console.log('todos los Usuarios',parse1)
+      setUsuariosData('usuarios:',parse1);
+    };
+    getUsuarios();
+  }, []); */
+
+  /* React.useEffect(() => {
     console.log("llega la data", state);
-    if (state) {
+    if (state && dataFormulario) {
       const filtrarPlantillas = () => {
         const filtrarArea = nombrePlantilla.filter(
           (a) => a.idArea === state.idArea
@@ -226,12 +248,20 @@ const Orden = () => {
       };
       filtrarPlantillas();
     }
-  }, [state]);
+  }, [state]); */
 
-  const revisar = () => {
+  const handleDrawerOpen = () => {
+    setOpen(true);
+  };
+
+  const handleDrawerClose = () => {
+    setOpen(false);
+  };
+
+  /* const revisar = () => {
     console.log("aqui", nombreFormulario);
     console.log(nombreOrden)
-  };
+  }; */
 
   return (
     <Box sx={{ display: "flex" }}>
@@ -276,11 +306,11 @@ const Orden = () => {
           </IconButton>
         </DrawerHeader>
         <Divider />
-        <Header />
+        <Header enviarState={dataState} />
         <Divider />
       </Drawer>
       <Main open={open}>
-        <DrawerHeader/>
+        <DrawerHeader />
         <Box
           sx={{
             display: "flex",
@@ -327,16 +357,16 @@ const Orden = () => {
                     Plantilla
                   </InputLabel>
                   <Select
-                    key={nombrePlantilla.id}
+                    key={nombreFormulario}
                     labelId="demo-simple-select-label"
                     id="demo-simple-select"
                     value={nombreFormulario || ""}
                     label="Plantilla"
                     onChange={(e) => setNombreFormulario(e.target.value)}
                   >
-                    {plantillaFiltrada &&
-                      plantillaFiltrada.map((n) => (
-                        <MenuItem value={n}>{n.nombreForm}</MenuItem>
+                    {dataFormulario &&
+                      dataFormulario.map((n) => (
+                        <MenuItem value={n}>{n.nombre}</MenuItem>
                       ))}
                   </Select>
                 </FormControl>
@@ -346,21 +376,22 @@ const Orden = () => {
                 <FormControl fullWidth>
                   <InputLabel id="demo-simple-select-label">Usuario</InputLabel>
                   <Select
-                    key={usuarios.id}
+                    key={usuarios}
                     labelId="demo-simple-select-label"
                     id="demo-simple-select"
-                    value={usuario || ""}
+                    value={usuarios || ""}
                     label="Usuario"
                     onChange={(e) => setUsuarios(e.target.value)}
                   >
-                    {usuarios.map((a) => (
-                      <MenuItem value={a.nombreArea}>{a.nombreArea}</MenuItem>
-                    ))}
+                    {usuariosData &&
+                      usuariosData.map((a) => (
+                        <MenuItem value={a}>{a.usuario}</MenuItem>
+                      ))}
                   </Select>
                 </FormControl>
               </Box>
               <Box sx={{ pt: 6, justifyContent: "right", display: "flex" }}>
-                <Fab variant="extended" onClick={revisar}>
+                <Fab variant="extended"  onClick={crearOrden}>
                   <SaveIcon sx={{ mr: 1 }} />
                   Guardar
                 </Fab>

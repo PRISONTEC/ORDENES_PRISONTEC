@@ -1,4 +1,5 @@
 import * as React from "react";
+import FetchData from "./share/fetchData";
 import { styled, useTheme } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import Drawer from "@mui/material/Drawer";
@@ -12,6 +13,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import Header from "./Header";
+import alertasForm from "./alertasForm"
 import TextField from "@mui/material/TextField";
 import FormControl from "@mui/material/FormControl";
 import Fab from "@mui/material/Fab";
@@ -22,6 +24,8 @@ import { useLocation } from "react-router-dom";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Alert from "@mui/material/Alert";
 import Stack from "@mui/material/Stack";
+import Snackbar from '@mui/material/Snackbar';
+import Grid from '@mui/material/Grid';
 const drawerWidth = 240;
 
 const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })(
@@ -88,7 +92,6 @@ const usuarios = [
 ];
 
 function Formulario() {
-  const { state } = useLocation();
   const theme = useTheme();
   const [open, setOpen] = useState(false);
   const [count, setCount] = useState(1);
@@ -104,43 +107,30 @@ function Formulario() {
   const [newInput, setNewInput] = useState([]);
   const [turnOn, setTurnOn] = useState(false);
   const [buttonGuardar, setButtonGuardar] = useState(true);
+  const [dataState, setDataState] = useState([]);
+  const { state } = useLocation();
+  
+  const enviarState = () => {
+    setDataState(state[0].resultado.idArea);
+  };
 
-  React.useEffect(() => {
-    console.log(state);
-  }, [state]);
-
-  /*  const crearFormulario = async () => {
-    let params = state.idArea;
-    let params1 = nombreFormulario;
-    let params2 = inputList;
+  const crearFormulario = async () => {
+    let params = {
+      idArea: state[0].resultado.idArea,
+      nombreFormulario: nombreFormulario,
+      bodyFormulario: JSON.stringify(inputList),
+    };
     const myData = await FetchData.postDataPromise(
-      "http://xxx.x.x.x:xxxx",
-      "/formulario/crearFormulario?idArea=" +
-        params +
-        "&nombreFormulario" +
-        params1 +
-        "&bodyFormulario" +
-        params2
+      "http://192.237.253.176:2850",
+      "/formulario/crearFormulario",
+      params,
+      3000
     );
     const data = await myData.json();
     console.log("se creó el formulario!", data);
     setRegistroFormulario(data);
     alert("Se creó");
-  }; */
-/* 
-  new Promise(function(resolve) {
-
-    resolve(guardar());
-    
-    }).then(function(result) {
-    
-    b();
-    
-    })
-
-    const b = ()=>{
-      alert('ejecutando')
-    } */
+  };
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -163,20 +153,10 @@ function Formulario() {
     setInputList(list);
   };
 
-  /*   const handleEliminar = (value) => {
-    console.log(value);
-    const newList = inputList.filter(function (elemento) {
-      return elemento !== value;
-    });
-    console.log(newList);
-    setInputList(newList);
-    console.log(inputList);
-  };
- */
-
   const handleAgregar = () => {
     setButtonGuardar(false);
     setInputList([...inputList, { pregunta: "" }]);
+    console.log(inputList);
   };
 
   const guardar = () => {
@@ -193,7 +173,7 @@ function Formulario() {
     }
     const last = inputList.pop();
     setInputList(inputList);
-    console.log("ultimo", inputList);
+    crearFormulario();
   };
 
   /*   const addTextField = () => {
@@ -278,7 +258,7 @@ function Formulario() {
           </IconButton>
         </DrawerHeader>
         <Divider />
-        <Header />
+        <Header enviarState={dataState} />
         <Divider />
       </Drawer>
       <Main open={open}>
@@ -324,9 +304,7 @@ function Formulario() {
                 id="standard-basic"
                 label="Ingrese el nombre de la plantilla"
                 variant="standard"
-                onChange={(e) =>
-                  setNombreFormulario(console.log(e.target.value))
-                }
+                onChange={(e) => setNombreFormulario(e.target.value)}
               />
               <Typography sx={{ pt: 5 }}>Cuestionario: </Typography>
               {inputList.map((x, i) => {
@@ -374,6 +352,7 @@ function Formulario() {
                 </Fab>
               </Box>
             </Box>
+            
           </Box>
         </Box>
       </Main>

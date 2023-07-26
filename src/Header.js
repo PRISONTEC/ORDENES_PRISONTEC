@@ -1,4 +1,5 @@
 import Box from "@mui/material/Box";
+import FetchData from "./share/fetchData";
 import * as React from "react";
 import Divider from "@mui/material/Divider";
 import List from "@mui/material/List";
@@ -8,24 +9,25 @@ import { useNavigate } from "react-router-dom";
 import Chip from "@mui/joy/Chip";
 import CheckIcon from "@mui/icons-material/Check";
 import Avatar from "@mui/joy/Avatar";
+import { useLocation } from "react-router-dom";
 
 const usuarios = [
   {
-    id: '1',
-    nombre: 'Maribel Huaman',
-    idArea: '1',
+    id: "1",
+    nombre: "Maribel Huaman",
+    idArea: "1",
   },
   {
-    id: '2',
-    nombre: 'Pedro Perez',
-    idArea: '2'
+    id: "2",
+    nombre: "Pedro Perez",
+    idArea: "2",
   },
   {
-    id: '3',
-    nombre: 'Lucia Caceres',
-    idArea: '3'
-  }
-]
+    id: "3",
+    nombre: "Lucia Caceres",
+    idArea: "3",
+  },
+];
 
 const style = {
   width: "100%",
@@ -35,6 +37,7 @@ const style = {
 
 function Header() {
   const navigate = useNavigate();
+  const { state } = useLocation();
 
   return (
     <Box
@@ -44,28 +47,38 @@ function Header() {
         backgroundColor: "#393636",
       }}
     >
-      <Box sx={{ display: "flex"}}>
+      <Box sx={{ display: "flex" }}>
         <Chip
-        label="Chip Filled"
+          label="Chip Filled"
           color="neutral"
           size="lg"
           startDecorator={<Avatar size="sm" />}
           endDecorator={<CheckIcon fontSize="sm" />}
           onClick={() => alert("CERRANDO SESIÓN")}
         >
-          {usuarios[0].nombre}
+          {state[1]}
         </Chip>
       </Box>
       <List sx={style} component="nav" aria-label="mailbox folders">
         <ListItem button>
-          <ListItemText primary="PRINCIPAL" onClick={() => navigate("/")} />
+          <ListItemText
+            primary="PRINCIPAL"
+            onClick={() => navigate("/misOrdenes", { state: state })}
+          />
         </ListItem>
         <Divider color="white" />
-        <ListItem button onClick={() => navigate("/formulario",{state: usuarios[0]})}>
+        <ListItem
+          button
+          onClick={() => navigate("/formulario", { state: state })}
+        >
           <ListItemText primary="CREAR FORMULARIO" />
         </ListItem>
         <Divider color="white" />
-        <ListItem button divider onClick={() => navigate("/orden",{state: usuarios[0]})}>
+        <ListItem
+          button
+          divider
+          onClick={() => navigate("/orden", { state: state })}
+        >
           <ListItemText primary="CREAR ORDEN" />
         </ListItem>
         <Divider color="white" />
