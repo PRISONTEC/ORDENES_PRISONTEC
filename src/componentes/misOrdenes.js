@@ -19,6 +19,8 @@ import Header from "../Header";
 import { styled, useTheme } from "@mui/material/styles";
 import { useLocation } from "react-router-dom";
 
+import fetchData from "../share/fetchData";
+import {epoch2Date} from "../share/utils";
 
 const drawerWidth = 240;
 
@@ -77,13 +79,13 @@ const MisOrdenes = () => {
             updatedAt: "6 days ago",
             estructuraFormulario: {nombreFormulario:"Mtto Preventivo", bodyFormulario:[{nombre:""},{apellidos: ""}, {cargo: ""}]},
             historia: [{nota: "something related to somebody", fechaHora: 1688401083, usuario: "Pedrito"},
-                {nota: "something related to everybody", fechaHora: 1688401083, usuario: "Gustavo"},
-                {nota: "someone calling you", fechaHora: 1688401083, usuario: "Miguel"},
-                {nota: "better call saul", fechaHora: 1688401083, usuario: "Maribel"},
-                {nota: "breaking bad", fechaHora: 1688401083, usuario: "Cielo"},
-                {nota: "El marginal", fechaHora: 1688401083, usuario: "Ricardo"},
-                {nota: "i dont know", fechaHora: 1688401083, usuario: "Oscar"},
-                {nota: "oaskfpoafi0afkaslñdkasñdka{sdal{sdlñ", fechaHora: 1688401083, usuario: "Diego"}]
+              {nota: "something related to everybody", fechaHora: 1688401083, usuario: "Gustavo"},
+              {nota: "someone calling you", fechaHora: 1688401083, usuario: "Miguel"},
+              {nota: "better call saul", fechaHora: 1688401083, usuario: "Maribel"},
+              {nota: "breaking bad", fechaHora: 1688401083, usuario: "Cielo"},
+              {nota: "El marginal", fechaHora: 1688401083, usuario: "Ricardo"},
+              {nota: "i dont know", fechaHora: 1688401083, usuario: "Oscar"},
+              {nota: "oaskfpoafi0afkaslñdkasñdka{sdal{sdlñ", fechaHora: 1688401083, usuario: "Diego"}]
           },
           {
             id: 2,
@@ -93,13 +95,13 @@ const MisOrdenes = () => {
             updatedAt: "2 days ago",
             estructuraFormulario: {nombreFormulario:"Resp Social RS", bodyFormulario:[{nombre:""},{apellidos: ""}, {cargo: ""}]},
             historia: [{nota: "aaaaaaaaaaaaaaaaaaaa", fechaHora: 1688401083, usuario: "Pedrito"},
-                {nota: "bbbbbbbbbbbbbbbbbvv", fechaHora: 1688401083, usuario: "Anastacio"},
-                {nota: "cccccccccccccccc", fechaHora: 1688401083, usuario: "Pancracio"},
-                {nota: "dddddddddddddddd", fechaHora: 1688401083, usuario: "Sulfitico"},
-                {nota: "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee", fechaHora: 1688401083, usuario: "Pedrito"},
-                {nota: "oooooooooooooooooooooooooooooooooooooooo", fechaHora: 1688401083, usuario: "Yupanqui"},
-                {nota: "añlsdkañlskdalsifao´scklaskpásdkápsda´sdk", fechaHora: 1688401083, usuario: "Rigoberto"},
-                {nota: "añlskfoasfka.mcñlaskda´sd{lasdlañsdlasdpoasfóf", fechaHora: 1688401083, usuario: "Pancracio"}]
+              {nota: "bbbbbbbbbbbbbbbbbvv", fechaHora: 1688401083, usuario: "Anastacio"},
+              {nota: "cccccccccccccccc", fechaHora: 1688401083, usuario: "Pancracio"},
+              {nota: "dddddddddddddddd", fechaHora: 1688401083, usuario: "Sulfitico"},
+              {nota: "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee", fechaHora: 1688401083, usuario: "Pedrito"},
+              {nota: "oooooooooooooooooooooooooooooooooooooooo", fechaHora: 1688401083, usuario: "Yupanqui"},
+              {nota: "añlsdkañlskdalsifao´scklaskpásdkápsda´sdk", fechaHora: 1688401083, usuario: "Rigoberto"},
+              {nota: "añlskfoasfka.mcñlaskda´sd{lasdlañsdlasdpoasfóf", fechaHora: 1688401083, usuario: "Pancracio"}]
           },
           {
             id: 3,
@@ -109,20 +111,20 @@ const MisOrdenes = () => {
             updatedAt: "3 days ago",
             estructuraFormulario: {nombreFormulario:"Ingenieria Mtto BQ", bodyFormulario:[{nombre:""},{apellidos: ""}, {cargo: ""}]},
             historia: [{nota: "", fechaHora: 1688401083, usuario: "Pedrito"},
-                {nota: "klahsfña{sf", fechaHora: 1688401083, usuario: "Juanito"},
-                {nota: "ñakfslkc{csc", fechaHora: 1688401083, usuario: "Pancracio"},
-                {nota: "ñauifpaifa´psdoapsdo", fechaHora: 1688401083, usuario: "Rigoberto"},
-                {nota: "opauvjopsdmvdcd", fechaHora: 1688401083, usuario: "Yupanqui"},
-                {nota: "akshja´sdpi¿a0wq0was", fechaHora: 1688401083, usuario: "Anastacio"},
-                {nota: "alncasncaposjda´sdapsdoas´dpoas´pdo", fechaHora: 1688401083, usuario: "Crenatino"},
-                {nota: "añkjas´fia´sidpalsdka´sodiasodaksñodiasdoáñsldkó", fechaHora: 1688401083, usuario: "Sulfitico"}]
+              {nota: "klahsfña{sf", fechaHora: 1688401083, usuario: "Juanito"},
+              {nota: "ñakfslkc{csc", fechaHora: 1688401083, usuario: "Pancracio"},
+              {nota: "ñauifpaifa´psdoapsdo", fechaHora: 1688401083, usuario: "Rigoberto"},
+              {nota: "opauvjopsdmvdcd", fechaHora: 1688401083, usuario: "Yupanqui"},
+              {nota: "akshja´sdpi¿a0wq0was", fechaHora: 1688401083, usuario: "Anastacio"},
+              {nota: "alncasncaposjda´sdapsdoas´dpoas´pdo", fechaHora: 1688401083, usuario: "Crenatino"},
+              {nota: "añkjas´fia´sidpalsdka´sodiasodaksñodiasdoáñsldkó", fechaHora: 1688401083, usuario: "Sulfitico"}]
           },
     ],
     realizadas: [
     ],
-};
+  };
 
-  const [items, setItems] = useState(ordenes);
+  //const [items, setItems] = useState(ordenes);
   const [llenoFormularioCierre, setLlenoFormularioCierre] = useState(false);
   const [ordenArrastrada, setOrdenArrastrada] = useState(undefined);
   const [dragEvent, setDragEvent] = useState(undefined);
@@ -131,6 +133,67 @@ const MisOrdenes = () => {
   const theme = useTheme();
   const { state } = useLocation();
   const [dataState, setDataState]=useState([])
+  const [usuarios, setUsuarios] = useState(undefined);
+  const [historias, setHistorias] = useState([]);
+  const [ordenesReales, setOrdenesReales] = useState({})
+  const [items, setItems] = useState(undefined);
+
+  //const ordenesA = JSON.parse(state[0].resultado.tareasAsignadas).filter((orden) => orden.fhFin === null)
+  //const ordenesR = JSON.parse(state[0].resultado.tareasAsignadas).filter((orden) => orden.fhFin !== null)
+  //console.log(ordenesA)
+  //const ordenesX = {asignadas: [...ordenesA], realizadas: [...ordenesR]}
+
+  const ordenesX = JSON.parse(state[0].resultado.tareasAsignadas)
+  const miIDArea = state[0].resultado.idArea
+  const nombreUsuario = state[1]
+
+  const getUsuarios = async () => {
+    const dataUsuarios = await fetchData.getDataPromise (
+      "http://192.237.253.176:2850",
+      "/usuario/obtenerUsuario", 3000
+    );
+    const usuarios = await dataUsuarios.json();
+    setUsuarios(JSON.parse(usuarios.resultado.usuarios))
+  }
+
+  const getHistorias = async (id) => {
+    let params = { idHistoria:  id};
+    const dataHistoria = await fetchData.postDataPromise (
+      "http://192.237.253.176:2850",
+      "/historia/obtenerHistoriaPorId", params, 3000
+    );
+    const historiasData = await dataHistoria.json();
+    if (historiasData.resultado.historia !== null) {
+      setHistorias (historiasData.resultado.historia);
+    }
+  }
+
+  useEffect(() => {
+    getUsuarios()
+  }, [])
+
+  useEffect(() => {
+    if (usuarios) {
+      // obtener los nombre de los usuarios a partir de su uuid
+      for(let i=0; i<ordenesX.length; i++) {
+        for(let j=0; j<usuarios.length; j++) {
+          if (ordenesX[i].idCreador === usuarios[j].uuid) {
+            ordenesX[i].asignadoPor = usuarios[j].usuario
+            ordenesX[i].fhCreacionDate = epoch2Date(ordenesX[i].fhCreacion)
+            ordenesX[i].fhFinDate = epoch2Date(ordenesX[i].fhFin)
+            break;
+          }
+        }
+      }
+      const asignadas = ordenesX.filter(orden => orden.fhFin === null)
+      const realizadas = ordenesX.filter(orden => orden.fhFin !== null)
+      const tmpOrdenesReales = {asignadas: asignadas, realizadas: realizadas}
+      console.log({ordenes: tmpOrdenesReales})
+      setItems(tmpOrdenesReales)
+    }
+  }, [usuarios])
+
+  useEffect(() => {console.log(items)}, [items])
 
   const enviarState = ()=>{
     setDataState(state)
@@ -149,7 +212,6 @@ const MisOrdenes = () => {
   };
 
   const actualizarOrdenes = (result) => {
-    console.log("entro por aca");
     const listCopy = { ...items };
     const sourceList = listCopy[result.source.droppableId];
     const [removedElement, newSourceList] = removeFromList(
@@ -189,11 +251,12 @@ const MisOrdenes = () => {
 
   const handlerMostrarAlerta = (tipo) => {
     setLanzarAlertas(tipo)
-}
+  }
 
-const handlerReiniciarEstadoAlertas = () => {
-  setLanzarAlertas({success: false, error: false})
-}
+  const handlerReiniciarEstadoAlertas = () => {
+    setLanzarAlertas({success: false, error: false})
+  }
+
   const handleRestartOrdenArrastrada = () => {
     setOrdenArrastrada(undefined);
   };
@@ -256,7 +319,8 @@ const handlerReiniciarEstadoAlertas = () => {
         {ordenArrastrada && (
           <FormularioCierre
             {...{
-              ...ordenArrastrada,
+              ordenArrastrada: ordenArrastrada,
+              items: items,
               ...{
                 restartOrden: handleRestartOrdenArrastrada,
                 eventDrag: dragEvent,
@@ -292,6 +356,7 @@ const handlerReiniciarEstadoAlertas = () => {
             justifyContent: "center",
           }}
         >
+        {items && 
           <DragDropContext onDragEnd={onDragEnd}>
             <List
               onDragEnd={onDragEnd}
@@ -310,7 +375,7 @@ const handlerReiniciarEstadoAlertas = () => {
                       {...provided.draggableProps}
                       {...provided.dragHandleProps}
                     >
-                      <Cards {...item} />
+                      <Cards {...{...item, myItem:item, nombreUsuario: nombreUsuario}} />
                     </div>
                   )}
                 </Draggable>
@@ -329,13 +394,14 @@ const handlerReiniciarEstadoAlertas = () => {
                       {...provided.draggableProps}
                       {...provided.dragHandleProps}
                     >
-                      <Cards {...item} />
+                      <Cards {...{...item, myItem:item, nombreUsuario: nombreUsuario}} />
                     </div>
                   )}
                 </Draggable>
               ))}
             </List>
           </DragDropContext>
+        }
         </Box>
       </Main>
     </>

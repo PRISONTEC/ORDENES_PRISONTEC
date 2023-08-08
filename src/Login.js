@@ -24,7 +24,7 @@ export default function BoxSx() {
   const navigate = useNavigate();
 
   const validarUsuario = async () => {
-    console.log("que llega?", nombreUsuario, password);
+    
     let params = { usuario: nombreUsuario, contrasena: password };
 
     const myData = await FetchData.postDataPromise(
@@ -36,18 +36,12 @@ export default function BoxSx() {
     const data = await myData.json();
     if (data["respuesta"] !== "KO") {
       setDataUsuario(data);
+      console.log("Data at start: ", data)
       navigate("/misOrdenes", { state: [data, nombreUsuario] });
     } else {
       alert("DATOS INVÁLIDOS");
       return;
     }
-    /*   if (data === undefined) {
-      alert('No hay data')
-    } else {
-      setDataUsuario(data);
-      alert('ingresó!')
-      navigate("/misOrdenes", { state: [data] });
-    } */
   };
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);

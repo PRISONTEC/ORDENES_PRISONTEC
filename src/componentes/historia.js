@@ -16,10 +16,12 @@ import Paper from '@mui/material/Paper';
 
 import Typography from '@mui/material/Typography';
 
+import fetchData from "../share/fetchData";
 import Nota from './nota';
 
 const Historia = (props) => {
-    const { historia, handlerOpenHistoria } = props
+    const { historia, setHistoria, handlerOpenHistoria, myItem, nombreUsuario } = props
+    console.log(historia, myItem)
     const [ openHistoria, setOpenHistoria ] = useState(true)
     const [ openNota, setOpenNota ] = useState(false)
     const [ nuevaHistoria, setNuevoHistoria ] = useState(historia)
@@ -43,10 +45,21 @@ const Historia = (props) => {
         setOpenNota(false)
     }
 
+    const registrarNota = async (nota, id, _idUsuario) => {
+        let params = { notas:  nota, idOrden: id, idUsuario: _idUsuario };
+        console.log(params)
+        const historiaData = await fetchData.postDataPromise (
+          "http://192.237.253.176:2850",
+          "/historia/crearHistoria", params, 3000
+        );
+        const addHistoriaData = await historiaData.json();
+    }
+
     const addNota = (nota) => {
         if (nota && nota !== "") {
-            setNuevoHistoria([...nuevaHistoria, {nota: nota, fechaHora: (Date.now() / 1000), usuario: "Educinho"}])
+            setHistoria([...historia, {notas: nota, fhNota: (Date.now() / 1000), usuario: nombreUsuario}])
             setLanzarAlertas({success: true, error: false})
+            registrarNota(nota, myItem.id, myItem.idEjecutor)
         }
         else {
             setLanzarAlertas({success: false, error: true})
@@ -66,6 +79,7 @@ const Historia = (props) => {
         { lanzarAlertas.error && 
             <Alertas msg={"Campos vacios"} severity={"error"} handlerReiniciarEstadoAlertas={handlerReiniciarEstadoAlertas}/> 
         }
+        { historia !== null &&
         <Dialog
             sx={{
                 "& .MuiDialog-container": {
@@ -100,14 +114,14 @@ const Historia = (props) => {
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                        {nuevaHistoria.map((row) => (
+                        {historia.map((row) => (
                             <TableRow
                             key={row.nota}
                             sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                             >
-                            <TableCell sx={{backgroundColor: "#B3B8BD"}} align="left">{epoch2Date(row.fechaHora)}</TableCell>
+                            <TableCell sx={{backgroundColor: "#B3B8BD"}} align="left">{epoch2Date(row.fhNota)}</TableCell>
                             <TableCell sx={{backgroundColor: "#B3B8BD"}} align="left">{row.usuario}</TableCell>
-                            <TableCell sx={{backgroundColor: "#B3B8BD"}} align="left">{row.nota}</TableCell>
+                            <TableCell sx={{backgroundColor: "#B3B8BD"}} align="left">{row.notas}</TableCell>
                             </TableRow>
                         ))}
                         </TableBody>
@@ -121,6 +135,7 @@ const Historia = (props) => {
                 </Box>
             </DialogContent>
         </Dialog>
+        }
         </>
     )
 }

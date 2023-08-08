@@ -7,12 +7,28 @@ import DialogContent from '@mui/material/DialogContent';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 
+import fetchData from "../share/fetchData";
+
 const FormularioCierre = (props) => {
-    const { restartOrden, eventDrag, handlerEventDrag, estructuraFormulario, handlerMostrarAlerta } = props
+    const { items, ordenArrastrada, restartOrden, eventDrag, handlerEventDrag, handlerMostrarAlerta } = props
     const [formularioCierre, setFormularioCierre] = useState(false)
     const [rptaFormulario, setRptaFormulario] = useState({});
 
-    useEffect(() => {setFormularioCierre(true)}, [props])
+    const [estructuraFormulario, setEstructuraFormulario] = useState(undefined)
+    console.log("Mi Orden", ordenArrastrada)
+
+    const getFormulario = async () => {
+        let params = { idFormulario:  ordenArrastrada.idFormulario};
+        const dataFormulario = await fetchData.postDataPromise (
+            "http://192.237.253.176:2850",
+            "/formulario/obtenerFormularioPorId", params, 3000
+        );
+        const miFormulario = await dataFormulario.json()
+        console.log(JSON.parse(miFormulario.resultado.formulario)[0])
+        setEstructuraFormulario(JSON.parse(miFormulario.resultado.formulario)[0])
+    }
+
+    useEffect(() => {getFormulario(); setFormularioCierre(true)}, [props])
 
     const llenarCampos = (evt, key) => {
         let constante = rptaFormulario;
@@ -20,16 +36,28 @@ const FormularioCierre = (props) => {
         setRptaFormulario(constante)
     }
 
+    const cerrarIncidencia = async (idOrden, dataFormulario) => {
+        let params = { id: idOrden, rptaOrden: JSON.stringify(dataFormulario) };
+        console.log(idOrden, dataFormulario)
+        const rptaCierre = await fetchData.postDataPromise (
+            "http://192.237.253.176:2850",
+            "/orden/cerrarOrden", params, 3000
+        );
+        const rpta = await rptaCierre.json()
+    }
+
     const validarCampos = () => {
         let keysFormulario = []
         let keysLlenadosForm = []
         // eslint-disable-next-line 
-        estructuraFormulario.bodyFormulario.map(field => {
+        JSON.parse(estructuraFormulario.body).map(field => {
             // eslint-disable-next-line 
             Object.entries(field).map(([key, value]) => {
                 keysFormulario.push(key)
             })
         })
+
+        console.log(rptaFormulario)
 
         for (let key in rptaFormulario) {
             if (!(rptaFormulario[key] === "" || rptaFormulario[key] === undefined)) {
@@ -39,7 +67,8 @@ const FormularioCierre = (props) => {
 
         if (keysFormulario.length === keysLlenadosForm.length) {
             handlerEventDrag(eventDrag);
-            handlerMostrarAlerta({success: true, error: false})   
+            handlerMostrarAlerta({success: true, error: false})
+            cerrarIncidencia(ordenArrastrada.id, rptaFormulario);   
         } else handlerMostrarAlerta({success: false, error: true})    
         setFormularioCierre(false);
         restartOrden();
@@ -47,6 +76,7 @@ const FormularioCierre = (props) => {
 
     return (
         <>
+        {estructuraFormulario &&
         <Dialog
             sx={{
                 "& .MuiDialog-container": {
@@ -67,12 +97,12 @@ const FormularioCierre = (props) => {
                     LLENAR FORMULARIO
                 </Typography>
                 <Typography variant="h5" sx={{textDecoration: 'underline'}}>
-                    {estructuraFormulario.nombreFormulario}
+                    {estructuraFormulario.nombre}
                 </Typography>
             </DialogTitle>
             <DialogContent> 
                 <Box sx={{display:"flex", flexDirection: "column", justifyContent:"center", rowGap: 3, p: 1}}>
-                    {estructuraFormulario.bodyFormulario.map(field => (
+                    {JSON.parse(estructuraFormulario.body).map(field => (
                         Object.entries(field).map(([key, value]) => (
                             <TextField onChange={(evt) => {llenarCampos(evt, key)}} 
                                 id={key} label={key} variant="outlined" required />
@@ -88,6 +118,7 @@ const FormularioCierre = (props) => {
                 </Box>
             </DialogContent>
         </Dialog>
+        }
         </>
     )
 }
