@@ -34,7 +34,7 @@ const Cards = (props) => {
             "/historia/obtenerHistoriaPorIdOrden", params, 3000
         );
         const miHistoria = await dataHistoria.json()
-        console.log("trayendo historias: ", id, miHistoria.resultado.historia)
+        //console.log("trayendo historias: ", id, miHistoria.resultado.historia)
         if (JSON.parse(miHistoria.resultado.historia) !== null ) 
             setHistoria(JSON.parse(miHistoria.resultado.historia))
         else 

@@ -135,7 +135,7 @@ const MisOrdenes = () => {
   const [dataState, setDataState]=useState([])
   const [usuarios, setUsuarios] = useState(undefined);
   const [historias, setHistorias] = useState([]);
-  const [ordenesReales, setOrdenesReales] = useState({})
+  const [ordenesReales, setOrdenesReales] = useState(undefined)
   const [items, setItems] = useState(undefined);
 
   //const ordenesA = JSON.parse(state[0].resultado.tareasAsignadas).filter((orden) => orden.fhFin === null)
@@ -143,6 +143,7 @@ const MisOrdenes = () => {
   //console.log(ordenesA)
   //const ordenesX = {asignadas: [...ordenesA], realizadas: [...ordenesR]}
 
+  const idUsuario = state[0].resultado.idUsuario
   const ordenesX = JSON.parse(state[0].resultado.tareasAsignadas)
   const miIDArea = state[0].resultado.idArea
   const nombreUsuario = state[1]
@@ -154,6 +155,17 @@ const MisOrdenes = () => {
     );
     const usuarios = await dataUsuarios.json();
     setUsuarios(JSON.parse(usuarios.resultado.usuarios))
+  }
+
+  const getOrdenes = async () => {
+    let params = { idUsuario:  idUsuario};
+    const ordenesData = await fetchData.postDataPromise (
+      "http://192.237.253.176:2850",
+      "/orden/obtenerOrdenesPorIdUsuario", params, 3000
+    );
+    const ordenes = await ordenesData.json();
+    console.log(JSON.parse(ordenes.resultado.tareasAsignadas))
+    setOrdenesReales(JSON.parse(ordenes.resultado.tareasAsignadas))
   }
 
   const getHistorias = async (id) => {
@@ -170,30 +182,31 @@ const MisOrdenes = () => {
 
   useEffect(() => {
     getUsuarios()
+    getOrdenes()
   }, [])
 
   useEffect(() => {
-    if (usuarios) {
+    if (usuarios && ordenesReales) {
       // obtener los nombre de los usuarios a partir de su uuid
-      for(let i=0; i<ordenesX.length; i++) {
+      for(let i=0; i<ordenesReales.length; i++) {
         for(let j=0; j<usuarios.length; j++) {
-          if (ordenesX[i].idCreador === usuarios[j].uuid) {
-            ordenesX[i].asignadoPor = usuarios[j].usuario
-            ordenesX[i].fhCreacionDate = epoch2Date(ordenesX[i].fhCreacion)
-            ordenesX[i].fhFinDate = epoch2Date(ordenesX[i].fhFin)
+          if (ordenesReales[i].idCreador === usuarios[j].uuid) {
+            ordenesReales[i].asignadoPor = usuarios[j].usuario
+            ordenesReales[i].fhCreacionDate = epoch2Date(ordenesReales[i].fhCreacion)
+            ordenesReales[i].fhFinDate = epoch2Date(ordenesReales[i].fhFin)
             break;
           }
         }
       }
-      const asignadas = ordenesX.filter(orden => orden.fhFin === null)
-      const realizadas = ordenesX.filter(orden => orden.fhFin !== null)
+      const asignadas = ordenesReales.filter(orden => orden.fhFin === null)
+      const realizadas = ordenesReales.filter(orden => orden.fhFin !== null)
       const tmpOrdenesReales = {asignadas: asignadas, realizadas: realizadas}
-      console.log({ordenes: tmpOrdenesReales})
+      //console.log({ordenes: tmpOrdenesReales})
       setItems(tmpOrdenesReales)
     }
-  }, [usuarios])
+  }, [usuarios, ordenesReales])
 
-  useEffect(() => {console.log(items)}, [items])
+  //useEffect(() => {console.log(items)}, [items])
 
   const enviarState = ()=>{
     setDataState(state)
@@ -326,6 +339,7 @@ const MisOrdenes = () => {
                 eventDrag: dragEvent,
                 handlerEventDrag: actualizarOrdenes,
                 handlerMostrarAlerta: handlerMostrarAlerta,
+                getOrdenes: getOrdenes
               },
             }}
           />

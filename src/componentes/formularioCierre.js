@@ -10,7 +10,7 @@ import Typography from '@mui/material/Typography';
 import fetchData from "../share/fetchData";
 
 const FormularioCierre = (props) => {
-    const { items, ordenArrastrada, restartOrden, eventDrag, handlerEventDrag, handlerMostrarAlerta } = props
+    const { items, ordenArrastrada, restartOrden, eventDrag, handlerEventDrag, handlerMostrarAlerta, getOrdenes } = props
     const [formularioCierre, setFormularioCierre] = useState(false)
     const [rptaFormulario, setRptaFormulario] = useState({});
 
@@ -46,7 +46,7 @@ const FormularioCierre = (props) => {
         const rpta = await rptaCierre.json()
     }
 
-    const validarCampos = () => {
+    const validarCampos = async () => {
         let keysFormulario = []
         let keysLlenadosForm = []
         // eslint-disable-next-line 
@@ -68,7 +68,8 @@ const FormularioCierre = (props) => {
         if (keysFormulario.length === keysLlenadosForm.length) {
             handlerEventDrag(eventDrag);
             handlerMostrarAlerta({success: true, error: false})
-            cerrarIncidencia(ordenArrastrada.id, rptaFormulario);   
+            await cerrarIncidencia(ordenArrastrada.id, rptaFormulario);   
+            await getOrdenes()
         } else handlerMostrarAlerta({success: false, error: true})    
         setFormularioCierre(false);
         restartOrden();
