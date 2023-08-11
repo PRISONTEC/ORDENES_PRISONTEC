@@ -14,6 +14,7 @@ import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import IconButton from "@mui/material/IconButton";
 import FetchData from "./share/fetchData";
 import { useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 
 export default function BoxSx() {
   const theme = useTheme();
@@ -22,6 +23,8 @@ export default function BoxSx() {
   const [showPassword, setShowPassword] = React.useState(false);
   const [dataUsuario, setDataUsuario] = useState([]);
   const navigate = useNavigate();
+  const { state } = useLocation();
+
 
   const validarUsuario = async () => {
     

@@ -370,14 +370,15 @@ const MisOrdenes = () => {
             justifyContent: "center",
           }}
         >
-        {items && 
+        
           <DragDropContext onDragEnd={onDragEnd}>
             <List
               onDragEnd={onDragEnd}
               name="asignadas"
               title="TAREAS PENDIENTES"
             >
-              {items.asignadas.map((item, index) => (
+              {items &&
+              items.asignadas.map((item, index) => (
                 <Draggable
                   key={item.id}
                   draggableId={item.id + ""}
@@ -400,7 +401,8 @@ const MisOrdenes = () => {
               name="realizadas"
               title="TAREAS REALIZADAS"
             >
-              {items.realizadas.map((item, index) => (
+              {items &&
+              items.realizadas.map((item, index) => (
                 <Draggable key={item.id} draggableId={item.uuid} index={index}>
                   {(provided, snapshot) => (
                     <div
@@ -415,7 +417,7 @@ const MisOrdenes = () => {
               ))}
             </List>
           </DragDropContext>
-        }
+        
         </Box>
       </Main>
     </>

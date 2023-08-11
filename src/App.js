@@ -3,6 +3,7 @@ import { Routes, Route, useNavigate, BrowserRouter } from "react-router-dom";
 
 import Orden from "./Orden";
 import Formulario from "./Fomulario";
+import MisOrdenesCreadas from "./misOrdenesCreadas";
 import MisOrdenes from "./componentes/misOrdenes";
 import Login from "./Login"
 
@@ -26,6 +27,7 @@ export default function App() {
         <Route path="/orden" element={<Orden />} />
         <Route path="/formulario" element={<Formulario/>} />
         <Route path="/misOrdenes" element={<MisOrdenes/>} />
+        <Route path="/misOrdenesCreadas" element={<MisOrdenesCreadas/>} />
       </Routes>
   );
 }

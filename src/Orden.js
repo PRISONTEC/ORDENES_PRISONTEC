@@ -26,7 +26,16 @@ import SaveIcon from "@mui/icons-material/Save";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { purple } from "@mui/material/colors";
 import { useLocation } from "react-router-dom";
+import Stack from '@mui/material/Stack';
+import Button from '@mui/material/Button';
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert from '@mui/material/Alert';
+
 const drawerWidth = 240;
+
+const Alert = React.forwardRef(function Alert(props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
 
 const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })(
   ({ theme, open }) => ({
@@ -161,6 +170,7 @@ const usuarios = [
 
 const Orden = () => {
   const theme = useTheme();
+  const [openAlert, setOpenAlert] = React.useState(false);
   const [open, setOpen] = useState(false);
   const [nombreOrden, setNombreOrden] = useState("");
   const [nombreFormulario, setNombreFormulario] = useState("");
@@ -178,21 +188,21 @@ const Orden = () => {
   };
 
   const crearOrden = async () => {
-    console.log(usuarios.uuid)
     let params ={idFormulario:nombreFormulario.id, idCreador:idUsuario, idEjecutor:usuarios.uuid, rptaOrden: nombreFormulario.body, motivo: nombreOrden}
-    console.log(JSON.stringify(params))  
+  
     const myData = await FetchData.postDataPromise(
         "http://192.237.253.176:2850",
         "/orden/crearOrden",params,3000
       );
       const data = await myData.json();
       setRegistroOrden(data);
-      console.log('dataCreada',registroOrden)
-      alert("Se creó");
+      setOpenAlert(true)
+      setNombreOrden("")
+      setNombreFormulario("")
+      setUsuarios("")
   }; 
 
   React.useEffect(() => {
-    console.log(state[0].resultado.idUsuario)
     setIdUsuario(state[0].resultado.idUsuario)
     let params = { idArea: state[0].resultado.idArea };
     const getFormulario = async () => {
@@ -204,7 +214,6 @@ const Orden = () => {
       );
       const data = await myData.json();
       const parse = JSON.parse(data.resultado.formularios);
-      console.log(parse);
       setDataFormulario(parse);
     };
 
@@ -215,7 +224,6 @@ const Orden = () => {
       );
       const dataUsuario = await myDataUsuario.json();
       const parse1 = JSON.parse(dataUsuario.resultado.usuarios);
-      console.log("todos los Usuarios", parse1);
       setUsuariosData(parse1);
     };
     getUsuarios();
@@ -258,6 +266,13 @@ const Orden = () => {
     setOpen(false);
   };
 
+  const handleCloseAlert = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpenAlert(false);
+  };  
   /* const revisar = () => {
     console.log("aqui", nombreFormulario);
     console.log(nombreOrden)
@@ -400,6 +415,13 @@ const Orden = () => {
           </Box>
         </Box>
       </Main>
+
+      <Snackbar open={openAlert} autoHideDuration={2000} onClose={handleCloseAlert}>
+        <Alert onClose={handleCloseAlert} severity="success" sx={{ width: '100%' }}>
+          Se creó la orden.
+        </Alert>
+      </Snackbar>                 
+
     </Box>
   );
 };

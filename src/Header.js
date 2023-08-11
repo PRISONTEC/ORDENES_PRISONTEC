@@ -11,24 +11,6 @@ import CheckIcon from "@mui/icons-material/Check";
 import Avatar from "@mui/joy/Avatar";
 import { useLocation } from "react-router-dom";
 
-const usuarios = [
-  {
-    id: "1",
-    nombre: "Maribel Huaman",
-    idArea: "1",
-  },
-  {
-    id: "2",
-    nombre: "Pedro Perez",
-    idArea: "2",
-  },
-  {
-    id: "3",
-    nombre: "Lucia Caceres",
-    idArea: "3",
-  },
-];
-
 const style = {
   width: "100%",
   maxWidth: 360,
@@ -38,6 +20,11 @@ const style = {
 function Header() {
   const navigate = useNavigate();
   const { state } = useLocation();
+  
+
+  const handleReload = () => {
+    window.location.reload();
+  };
 
   return (
     <Box
@@ -54,7 +41,7 @@ function Header() {
           size="lg"
           startDecorator={<Avatar size="sm" />}
           endDecorator={<CheckIcon fontSize="sm" />}
-          onClick={() => alert("CERRANDO SESIÓN")}
+          onClick={handleReload}
         >
           {state[1]}
         </Chip>
@@ -80,6 +67,14 @@ function Header() {
           onClick={() => navigate("/orden", { state: state })}
         >
           <ListItemText primary="CREAR ORDEN" />
+        </ListItem>
+        <Divider color="white" />
+        <ListItem
+          button
+          divider
+          onClick={() => navigate("/misOrdenesCreadas", { state: state })}
+        >
+          <ListItemText primary="MIS ORDENES CREADAS" />
         </ListItem>
         <Divider color="white" />
       </List>

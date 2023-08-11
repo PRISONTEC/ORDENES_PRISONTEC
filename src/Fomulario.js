@@ -5,6 +5,8 @@ import Box from "@mui/material/Box";
 import Drawer from "@mui/material/Drawer";
 import CssBaseline from "@mui/material/CssBaseline";
 import MuiAppBar from "@mui/material/AppBar";
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert from '@mui/material/Alert';
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import Divider from "@mui/material/Divider";
@@ -22,11 +24,13 @@ import Button from "@mui/material/Button";
 import { useState } from "react";
 import { useLocation } from "react-router-dom";
 import DeleteIcon from "@mui/icons-material/Delete";
-import Alert from "@mui/material/Alert";
 import Stack from "@mui/material/Stack";
-import Snackbar from '@mui/material/Snackbar';
 import Grid from '@mui/material/Grid';
 const drawerWidth = 240;
+
+const Alert = React.forwardRef(function Alert(props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
 
 const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })(
   ({ theme, open }) => ({
@@ -72,27 +76,9 @@ const DrawerHeader = styled("div")(({ theme }) => ({
   justifyContent: "flex-end",
 }));
 
-const usuarios = [
-  {
-    id: "1",
-    nombreArea: "Pedro",
-  },
-  {
-    id: "2",
-    nombreArea: "Pablo",
-  },
-  {
-    id: "3",
-    nombreArea: "Lucia",
-  },
-  {
-    id: "4",
-    nombreArea: "Melissa",
-  },
-];
-
 function Formulario() {
   const theme = useTheme();
+  const [openAlert, setOpenAlert] = React.useState(false);
   const [open, setOpen] = useState(false);
   const [count, setCount] = useState(1);
   const [textFields, setTextFields] = useState([]);
@@ -127,9 +113,8 @@ function Formulario() {
       3000
     );
     const data = await myData.json();
-    console.log("se creó el formulario!", data);
     setRegistroFormulario(data);
-    alert("Se creó");
+    setOpenAlert(true);
   };
 
   const handleDrawerOpen = () => {
@@ -215,6 +200,14 @@ function Formulario() {
     console.log(textFields);
   };
  */
+  const handleCloseAlert = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpenAlert(false);
+  };
+
   return (
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
@@ -356,6 +349,12 @@ function Formulario() {
           </Box>
         </Box>
       </Main>
+
+      <Snackbar open={openAlert} autoHideDuration={2000} onClose={handleCloseAlert}>
+        <Alert onClose={handleCloseAlert} severity="success" sx={{ width: '100%' }}>
+          Se creó el formulario exitosamente.
+        </Alert>
+      </Snackbar>
     </Box>
   );
 }
